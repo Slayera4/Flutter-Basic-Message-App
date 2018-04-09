@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 const String _name = "Your Name";
 
 class ChatMessage extends StatelessWidget {
+  
+
   ChatMessage({this.text});
   final String text;
   @override

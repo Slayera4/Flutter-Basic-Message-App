@@ -1,14 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:labcode/chatMessages.dart';
+import 'package:labcode/database.dart';
 
 class ChatScreen extends StatefulWidget {
   State createState() => new ChatScreenState();
+  
 }
 
 class ChatScreenState extends State<ChatScreen> {
+
+
+  @override
+  void dispose() {
+    MessageDatabase.get().close();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    MessageDatabase.get().init()
+    .then((dynamic){this.lol();});
+  }
+  
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
 
+  void lol(){
+    MessageDatabase.get().gang().then((list) {
+      for(Map item in list){
+        print(item["text"]);
+        var l;
+        l=item["text"];
+        ChatMessage message = new ChatMessage(
+          text: l,
+        );
+        setState(() {
+          _messages.insert(0, message);
+        });
+      }
+
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -64,11 +97,9 @@ class ChatScreenState extends State<ChatScreen> {
 
   void _handleSubmitted(String text) {
     _textController.clear();
-    ChatMessage message = new ChatMessage(
-      text: text,
-    );
-    setState(() {
-      _messages.insert(0, message);
-    });
+    // ChatMessage message = new ChatMessage(
+    //   text: text,
+    // );
+    
   }
 }

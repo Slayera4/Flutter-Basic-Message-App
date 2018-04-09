@@ -2,6 +2,8 @@ name: labcode
 description: A new Flutter project.
 
 dependencies:
+  sqflite: '>=0.8.5'
+  path_provider: "^0.3.1"
   flutter:
     sdk: flutter
 

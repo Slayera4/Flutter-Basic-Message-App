@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:labcode/chat.dart';
+import 'package:labcode/database.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new New());
 
-class MyApp extends StatelessWidget {
+class New extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Container(
+      child: new Myapp(),
+    );
+  }
+}
+
+class Myapp extends StatefulWidget {
+  State createState() => new _MyApp();
+}
+
+class _MyApp extends State<Myapp> {
+  @override
+  void dispose() {
+    MessageDatabase.get().close();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
