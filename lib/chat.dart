@@ -1,47 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:labcode/chatMessages.dart';
-import 'package:labcode/database.dart';
+import 'package:labcode/wireframe.dart';
+import 'package:labcode/model/message.dart';
+import 'package:labcode/Interactors/messageChat.dart';
+import 'package:labcode/interactors/messageChatIO.dart';
 
 class ChatScreen extends StatefulWidget {
+  ChatScreen();
+
   State createState() => new ChatScreenState();
-  
 }
 
-class ChatScreenState extends State<ChatScreen> {
 
+class ChatScreenState extends State<ChatScreen> implements MessageChatOutput {
+    
+  final List<ChatMessage> _messagesChat = <ChatMessage>[];
+  final TextEditingController _textController = new TextEditingController();
+
+  MessageChatInput interactor;
+
+  ChatScreenState(){
+    Wireframe wireframe = Wireframe.get();
+    interactor = wireframe.messageChat;
+    wireframe.messageChat.presenter = this;
+  }
 
   @override
   void dispose() {
-    MessageDatabase.get().close();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    MessageDatabase.get().init()
-    .then((dynamic){this.lol();});
-  }
-  
-  final List<ChatMessage> _messages = <ChatMessage>[];
-  final TextEditingController _textController = new TextEditingController();
 
-  void lol(){
-    MessageDatabase.get().gang().then((list) {
-      for(Map item in list){
-        print(item["text"]);
-        var l;
-        l=item["text"];
-        ChatMessage message = new ChatMessage(
-          text: l,
-        );
-        setState(() {
-          _messages.insert(0, message);
-        });
-      }
-
-    });
+    interactor.requestMessages();
   }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -54,8 +49,8 @@ class ChatScreenState extends State<ChatScreen> {
             child: new ListView.builder(
               padding: new EdgeInsets.all(8.0),
               reverse: true,
-              itemBuilder: (_, int index) => _messages[index],
-              itemCount: _messages.length,
+              itemBuilder: (_, int index) => _messagesChat[index],
+              itemCount: _messagesChat.length,
             ),
           ),
           new Divider(height: 1.0),
@@ -100,6 +95,40 @@ class ChatScreenState extends State<ChatScreen> {
     // ChatMessage message = new ChatMessage(
     //   text: text,
     // );
-    
+
+    Message message = new Message(
+      text:text
+    );
+
+    ChatMessage message2 = new ChatMessage(
+      text:text
+    );
+    setState(() {
+           _messagesChat.insert(0, message2);
+         });
+    interactor.sendMessage(message);
   }
+
+  @override
+  newMessage(Message message) {
+    // TODO: implement newMessage
+  }
+
+  @override
+  setMessages(List<Message> messages) {
+    _messagesChat.clear();
+
+    for(Message message in messages){
+        print(message.text);
+        var l;
+        l=message.text;
+         ChatMessage message2 = new ChatMessage(
+          text: l,
+         );
+         setState(() {
+           _messagesChat.insert(0, message2);
+         });
+       }
+  }
+
 }
